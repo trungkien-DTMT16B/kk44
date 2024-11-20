@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartbeat Gauge</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://www.unpkg.com/@eohjsc/era-widget@1.0.14/src/index.js"></script>
+    <style>
+        .highcharts-figure .chart-container {
+            width: 300px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .highcharts-figure {
+            width: 300px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .export-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .export-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <figure class="highcharts-figure">
+        <div id="container-heartbeat" class="chart-container"></div>
+        <p class="highcharts-description">Heartbeat Dashboard</p>
+        <button id="exportButton" class="export-btn">Export to Excel</button>
+    </figure>
+
+    <script>
+        // Era Widget initialization
+        const eraWidget = new EraWidget();
+        let config = null;
+        let heartbeatValue = 0; // Initialize default heartbeat value
+        const dataBuffer = [];
+
+        eraWidget.onConfiguration((configuration) => {
+            config = configuration.realtime_configs[0];
+        });
+
+        eraWidget.onValues((values) => {
+            heartbeatValue = values[config.id].value || 0; // Assume heartbeat value is fetched from IoT
+        });
+
+        eraWidget.ready();
+
+        // Gauge chart options
+        const gaugeOptions = {
+            chart: {
+                type: 'solidgauge'
+            },
+            title: null,
+            pane: {
+                center: ['50%', '85%'],
+                size: '140%',
+                startAngle: -90,
+                endAngle: 90,
+                background: {
+                    backgroundColor: '#f0f0f0',
+                    innerRadius: '60%',
+                    outerRadius: '100%',
+                    shape: 'arc'
+                }
+            },
+            yAxis: {
+                stops: [
+                    [0.1, '#55BF3B'], // green
+                    [0.5, '#DDDF0D'], // yellow
+                    [0.9, '#DF5353']  // red
+                ],
+                lineWidth: 0,
+                tickWidth: 0,
+                minorTickInterval: null,
+                tickAmount: 2,
+                title: {
+                    y: -70
+                },
+                labels: {
+                    y: 16
+                }
+            },
+            plotOptions: {
+                solidgauge: {
+                    dataLabels: {
+                        y: 5,
+                        borderWidth: 0,
+                        useHTML: true
+                    }
+                }
+            }
+        };
+
+        // Heartbeat gauge
+        const chartHeartbeat = Highcharts.chart('container-heartbeat', Highcharts.merge(gaugeOptions, {
+            yAxis: {
+                min: 0,
+                max: 130, // Assuming maximum heartbeat value is 130 bpm
+                title: {
+                    text: 'Heartbeat (BPM)'
+                }
+            },
+            series: [{
+                name: 'Heartbeat',
+                data: [0],
+                dataLabels: {
+                    format:
+                        '<div style="text-align:center">' +
+                        '<span style="font-size:25px">{y:.0f}</span><br/>' +
+                        '<span style="font-size:12px;opacity:0.4">BPM</span>' +
+                        '</div>'
+                },
+                tooltip: {
+                    valueSuffix: ' BPM'
+                }
+            }]
+        }));
+
+        // Update gauge chart and buffer data periodically
+        setInterval(() => {
+            const x = (new Date()).getTime(); // Current timestamp
+            const y = heartbeatValue; // Current heartbeat value
+
+            // Update gauge value
+            const point = chartHeartbeat.series[0].points[0];
+            point.update(y);
+
+            // Store data in buffer
+            dataBuffer.push([x, y]);
+
+            // Limit buffer to 30 minutes (1800 seconds)
+            const thirtyMinutesAgo = x - 1800 * 1000;
+            while (dataBuffer.length > 0 && dataBuffer[0][0] < thirtyMinutesAgo) {
+                dataBuffer.shift();
+            }
+        }, 1000); // Update every second
+
+        // Export to Excel
+        document.getElementById('exportButton').addEventListener('click', () => {
+            const ws = XLSX.utils.json_to_sheet(dataBuffer.map(point => ({
+                Time: (new Date(point[0])).toLocaleString(),
+                Heartbeat: point[1]
+            })));
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Heartbeat Data');
+            XLSX.writeFile(wb, 'heartbeat_data.xlsx');
+        });
+    </script>
+</body>
+</html>
