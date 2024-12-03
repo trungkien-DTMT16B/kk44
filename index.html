@@ -20,18 +20,20 @@
             margin: 20px auto;
             text-align: center;
         }
-        .export-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #FFF;
+        button {
+            display: block;
+            margin: 1em auto;
+            padding: 0.5em 1em;
+            font-size: 1em;
+            background-color: #45a049;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .export-btn:hover {
-            background-color: #0056b3;
+
+        button:hover {
+            background-color: #75cb7893;
         }
     </style>
 </head>
@@ -39,7 +41,7 @@
     <figure class="highcharts-figure">
         <div id="container-heartbeat" class="chart-container"></div>
         <p class="highcharts-description">Heartbeat Dashboard</p>
-        <button id="exportButton" class="export-btn">Export to Excel</button>
+        <button id="exportButton">Export to Excel</button>
     </figure>
 
 <input type="checkbox" id="buibui"/>
