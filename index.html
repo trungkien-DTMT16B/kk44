@@ -44,12 +44,12 @@
         <button id="exportButton">Export to Excel</button>
     </figure>
 
-<input type="checkbox" id="buibui"/>
+<input type="checkbox" id="MQ135"/>
     <script>
         // Era Widget initialization
         const eraWidget = new EraWidget();
         let config = null;
-        let heartbeatValue = 0; // Khởi tạo giá trị nhịp tim mặc định
+        let mqValue = 0; // Khởi tạo giá trị nhịp tim mặc định
         const dataBuffer = [];
 
         eraWidget.onConfiguration((configuration) => {
@@ -57,8 +57,8 @@
         });
 
         eraWidget.onValues((values) => {
-            const input = document.getElementById('buibui');
-            heartbeatValue = values[config.id].value; // Giả sử values[config.id].value là nhịp tim thực tế
+            const input = document.getElementById('MQ135');
+            mqValue = values[config.id].value; // Giả sử values[config.id].value là nhịp tim thực tế
             input.checked = values[config.id].value > 0; // Đặt trạng thái của checkbox dựa trên nhịp tim
         });
 
@@ -111,7 +111,7 @@
         };
 
         // Heartbeat gauge
-        const chartHeartbeat = Highcharts.chart('container-heartbeat', Highcharts.merge(gaugeOptions, {
+        const chartmq = Highcharts.chart('container-mq', Highcharts.merge(gaugeOptions, {
             yAxis: {
                 min: 0,
                 max: 100, // Assuming maximum heartbeat value is 130 bpm
@@ -138,10 +138,10 @@
         // Update gauge chart and buffer data periodically
         setInterval(() => {
             const x = (new Date()).getTime(); // Current timestamp
-            const y = heartbeatValue; // Current heartbeat value
+            const y = mqValue; // Current heartbeat value
 
             // Update gauge value
-            const point = chartHeartbeat.series[0].points[0];
+            const point = chartmq.series[0].points[0];
             point.update(y);
 
             // Store data in buffer
