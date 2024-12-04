@@ -111,7 +111,7 @@
         };
 
         // Heartbeat gauge
-        const chartHeartbeat = Highcharts.chart('container-heartbeat', Highcharts.merge(gaugeOptions, {
+        const chartkk = Highcharts.chart('container-heartbeat', Highcharts.merge(gaugeOptions, {
             yAxis: {
                 min: 0,
                 max: 100, // Assuming maximum heartbeat value is 130 bpm
@@ -141,7 +141,7 @@
             const y = mqValue; // Current heartbeat value
 
             // Update gauge value
-            const point = chartHeartbeat.series[0].points[0];
+            const point = chartkk.series[0].points[0];
             point.update(y);
 
             // Store data in buffer
