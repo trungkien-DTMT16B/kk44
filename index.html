@@ -49,7 +49,7 @@
         // Era Widget initialization
         const eraWidget = new EraWidget();
         let config = null;
-        let heartbeatValue = 0; // Khởi tạo giá trị nhịp tim mặc định
+        let mqValue = 0; // Khởi tạo giá trị nhịp tim mặc định
         const dataBuffer = [];
 
         eraWidget.onConfiguration((configuration) => {
@@ -58,7 +58,7 @@
 
         eraWidget.onValues((values) => {
             const input = document.getElementById('MQ135');
-            heartbeatValue = values[config.id].value; // Giả sử values[config.id].value là nhịp tim thực tế
+            mqValue = values[config.id].value; // Giả sử values[config.id].value là nhịp tim thực tế
             input.checked = values[config.id].value > 0; // Đặt trạng thái của checkbox dựa trên nhịp tim
         });
 
@@ -138,7 +138,7 @@
         // Update gauge chart and buffer data periodically
         setInterval(() => {
             const x = (new Date()).getTime(); // Current timestamp
-            const y = heartbeatValue; // Current heartbeat value
+            const y = mqValue; // Current heartbeat value
 
             // Update gauge value
             const point = chartHeartbeat.series[0].points[0];
