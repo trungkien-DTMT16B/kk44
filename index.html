@@ -39,7 +39,7 @@
 </head>
 <body>
     <figure class="highcharts-figure">
-        <div id="container-heartbeat" class="chart-container"></div>
+        <div id="container-kk" class="chart-container"></div>
         <p class="highcharts-description"></p>
         <button id="exportButton">Export to Excel</button>
     </figure>
@@ -111,7 +111,7 @@
         };
 
         // Heartbeat gauge
-        const chartkk = Highcharts.chart('container-heartbeat', Highcharts.merge(gaugeOptions, {
+        const chartkk = Highcharts.chart('container-kk', Highcharts.merge(gaugeOptions, {
             yAxis: {
                 min: 0,
                 max: 100, // Assuming maximum heartbeat value is 130 bpm
@@ -120,7 +120,7 @@
                 }
             },
             series: [{
-                name: 'Heartbeat',
+                name: 'PPM',
                 data: [0],
                 dataLabels: {
                     format:
